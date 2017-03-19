@@ -9,6 +9,7 @@
 #include "./naive_storage_manager.h"
 #include "./pooled_storage_manager.h"
 #include "./cpu_device_storage.h"
+#include "./gpu_device_storage.h"
 #include "./pinned_memory_storage.h"
 #include "../common/cuda_utils.h"
 #include "../common/lazy_alloc_array.h"
@@ -33,6 +34,7 @@ class StorageImpl : public Storage {
       case Context::kCPU: break;
       case Context::kGPU:
       case Context::kCPUPinned:
+      case Context::kGPUNaive:
 #if MXNET_USE_CUDA
         CUDA_CALL(cudaSetDevice(ctx.dev_id));
 #else  // MXNET_USE_CUDA
@@ -73,6 +75,14 @@ Storage::Handle StorageImpl::Alloc(size_t size, Context ctx) {
           case Context::kGPU: {
 #if MXNET_USE_CUDA
             ptr = new storage::GPUPooledStorageManager();
+#else
+            LOG(FATAL) << "Compile with USE_CUDA=1 to enable GPU usage";
+#endif  // MXNET_USE_CUDA
+            break;
+          }
+          case Context::kGPUNaive: {
+#if MXNET_USE_CUDA
+            ptr = new storage::NaiveStorageManager<storage::GPUDeviceStorage>();
 #else
             LOG(FATAL) << "Compile with USE_CUDA=1 to enable GPU usage";
 #endif  // MXNET_USE_CUDA

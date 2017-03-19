@@ -118,7 +118,8 @@ struct Context {
   enum DeviceType {
     kCPU = cpu::kDevMask,
     kGPU = gpu::kDevMask,
-    kCPUPinned = 3
+    kCPUPinned = 3,
+    kGPUNaive = 4
   };
   /*! \brief the device type we run the op on */
   DeviceType dev_type;
@@ -132,6 +133,7 @@ struct Context {
    */
   inline int dev_mask() const {
     if (dev_type == kCPUPinned) return cpu::kDevMask;
+    if (dev_type == kGPUNaive) return gpu::kDevMask;
     return dev_type;
   }
   /*!
@@ -198,6 +200,8 @@ struct Context {
    * \return Pinned CPU context. -1 for current GPU.
    */
   inline static Context CPUPinned(int32_t dev_id = -1);
+
+  inline static Context GPUNaive(int32_t dev_id = -1);
   /*!
    * Create a context from string of the format [cpu|gpu|cpu_pinned](n)
    * \param str the string pattern
@@ -266,6 +270,10 @@ inline Context Context::GPU(int32_t dev_id) {
   return Create(kGPU, dev_id);
 }
 
+inline Context Context::GPUNaive(int32_t dev_id) {
+  return Create(kGPUNaive, dev_id);
+}
+
 inline Context Context::FromString(std::string str) {
   Context ret;
   try {
@@ -282,6 +290,8 @@ inline Context Context::FromString(std::string str) {
       ret = GPU(id);
     } else if (type == "cpu_pinned") {
       ret = CPUPinned(id);
+    } else if (type == "gpu_naive") {
+      ret = GPUNaive(id);
     } else {
       LOG(FATAL) << "Invalid context string " << str;
     }
@@ -298,6 +308,8 @@ inline std::ostream& operator<<(std::ostream &out, const Context &ctx) {
     out << "gpu(";
   } else if (ctx.dev_type == Context::kCPUPinned) {
     out << "cpu_pinned(";
+  } else if (ctx.dev_type == Context::kGPUNaive) {
+    out << "gpu_naive(";
   } else {
     out << "unknown(";
   }

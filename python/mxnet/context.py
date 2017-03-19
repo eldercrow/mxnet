@@ -29,8 +29,8 @@ class Context(object):
     """
     # static class variable
     default_ctx = None
-    devtype2str = {1: 'cpu', 2: 'gpu', 3: 'cpu_pinned'}
-    devstr2type = {'cpu': 1, 'gpu': 2, 'cpu_pinned': 3}
+    devtype2str = {1: 'cpu', 2: 'gpu', 3: 'cpu_pinned', 4: 'gpu_naive'}
+    devstr2type = {'cpu': 1, 'gpu': 2, 'cpu_pinned': 3, 'gpu_naive': 4}
     def __init__(self, device_type, device_id=0):
         if isinstance(device_type, Context):
             self.device_typeid = device_type.device_typeid
@@ -114,6 +114,9 @@ def gpu(device_id=0):
         The corresponding GPU context.
     """
     return Context('gpu', device_id)
+
+def gpu_naive(device_id=0):
+    return Context('gpu_naive', device_id)
 
 
 def current_context():

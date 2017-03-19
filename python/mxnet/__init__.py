@@ -3,7 +3,7 @@
 """MXNet: a concise, fast and flexible framework for deep learning. """
 from __future__ import absolute_import
 
-from .context import Context, current_context, cpu, gpu
+from .context import Context, current_context, cpu, gpu, gpu_naive
 from .base import MXNetError
 from . import base
 from . import ndarray
