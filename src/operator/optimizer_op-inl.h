@@ -183,6 +183,8 @@ inline void AdamUpdate(const nnvm::NodeAttrs& attrs,
     grad = scalar<DType>(param.rescale_grad) * grad +
       scalar<DType>(param.wd) * weight;
 
+    mean = scalar<DType>(param.beta1)*mean + scalar<DType>(1.f-param.beta1) * grad;
+    var = scalar<DType>(param.beta2)*var + scalar<DType>(1.f-param.beta2) * F<square>(grad);
     if (param.clip_gradient >= 0.0f) {
       mean = scalar<DType>(param.beta1)*mean + scalar<DType>(1.f-param.beta1) *
           F<clip>(grad, DType(param.clip_gradient));
