@@ -69,7 +69,7 @@ inline void MultiBoxPriorForward(const Tensor<gpu, 2, DType> &out,
   for (int i = 0; i < num_sizes; ++i) {
     for (int j = 0; j < num_ratios; ++j) {
       cuda::AssignPriors<DType><<<dimGrid, dimBlock, 0, stream>>>(out_ptr,
-        sizes[i], sqrtf(ratios[j]), in_width, in_height, step_x, step_y, stride, offset);
+        sizes[i], sqrtf(ratios[j]), in_width, in_height, step_x, step_y, offset_y, offset_x, stride, offset);
       ++offset;
     }
   }
