@@ -1,7 +1,7 @@
 # coding: utf-8
 # pylint: disable= too-many-lines, redefined-builtin, protected-access
 # pylint: disable=import-error, no-name-in-module, undefined-variable
-"""NDArray API of mxnet."""
+"""NDArray API of MXNet."""
 from __future__ import absolute_import
 from __future__ import division
 try:
@@ -60,12 +60,12 @@ _DTYPE_MX_TO_NP = {
 def _new_empty_handle():
     """Returns a new empty handle.
 
-    Empty handle can be used to hold result.
+    Empty handle can be used to hold a result.
 
     Returns
     -------
     handle
-        A new empty NDArray handle.
+        A new empty `NDArray` handle.
     """
     hdl = NDArrayHandle()
     check_call(_LIB.MXNDArrayCreateNone(ctypes.byref(hdl)))
@@ -79,7 +79,7 @@ def _new_alloc_handle(shape, ctx, delay_alloc, dtype=mx_real_t):
     Returns
     -------
     handle
-        A new empty NDArray handle.
+        A new empty `NDArray` handle.
     """
     hdl = NDArrayHandle()
     check_call(_LIB.MXNDArrayCreateEx(
@@ -230,6 +230,10 @@ fixed-size items.
     def __le__(self, other):
         """x.__le__(y) <=> x<=y <=> mx.nd.less_equal(x, y) """
         return lesser_equal(self, other)
+
+    def __bool__(self):
+        raise ValueError("The truth value of an NDArray with more than one element is ambiguous.")
+    __nonzero__ = __bool__
 
     def __getstate__(self):
         handle = self.handle
@@ -453,7 +457,7 @@ fixed-size items.
         return NDArray(handle=handle, writable=self.writable)
 
     def reshape(self, shape):
-        """Returns a view of this array with a new shape without altering any data.
+        """Returns a **view** of this array with a new shape without altering any data.
 
         Parameters
         ----------

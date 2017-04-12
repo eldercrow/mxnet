@@ -211,7 +211,7 @@ img {
 
 .main-nav-link:hover {
     opacity: 1;
-    color: #1094e8;
+    color: #fff;
     text-decoration: none;
 }
 
@@ -879,4 +879,13 @@ table.docutils tr:nth-child(even) {
 .opt-group {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+/*----------------Copy code button------------------------*/
+.copy-btn {
+    display: none;
+    position: absolute;
+    right: 0;
+    width: 40px;
+    height: 38px;
 }
