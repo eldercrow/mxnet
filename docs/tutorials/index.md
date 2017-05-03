@@ -18,7 +18,7 @@ These tutorials introduce fundamental concepts in deep learning and their realiz
 
 - [Record IO - Pack free-format data in binary files ](http://mxnet.io/tutorials/python/record_io.html)
 
-- [Custom Image IO - Write high-performance data-pipelines using `mxnet.image`](http://mxnet.io/tutorials/python/advanced_img_io.html)
+- [Custom Image IO - Write high-performance data-pipelines using mxnet.image](http://mxnet.io/tutorials/python/advanced_img_io.html)
 
 #### Computer Vision
 
@@ -79,6 +79,10 @@ These tutorials introduce fundamental concepts in deep learning and their realiz
 ### C++
 
 - [Basics](http://mxnet.io/tutorials/c++/basics.html)
+
+### Perl
+
+- [Calculator, handwritten digits and roboshakespreare](http://blogs.perl.org/users/sergey_kolychev/2017/04/machine-learning-in-perl-part2-a-calculator-handwritten-digits-and-roboshakespeare.html)
 
 ## Contributing Tutorials
 
