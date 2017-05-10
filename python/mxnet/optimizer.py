@@ -265,6 +265,13 @@ class Optimizer(object):
         wd : float
             Weight decay for this index.
         """
+        # TODO: remove the following lines later!
+        # if self.lr_scheduler is not None:
+        #     lr = self.lr_scheduler(self.num_update)
+        # else:
+        #     lr = self.lr
+        # wd = lr * self.wd
+        # TODO: remove till here
         wd = self.wd
         if index in self.wd_mult:
             wd *= self.wd_mult[index]

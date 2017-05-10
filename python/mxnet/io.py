@@ -545,6 +545,7 @@ class NDArrayIter(DataIter):
     def next(self):
         if self.iter_next():
             return DataBatch(data=self.getdata(), label=self.getlabel(), \
+                    provide_data=self.provide_data, provide_label=self.provide_label,
                     pad=self.getpad(), index=None)
         else:
             raise StopIteration

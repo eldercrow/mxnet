@@ -5,7 +5,7 @@
 ######################################################################
 set -e
 
-MXNET_HOME="$HOME/mxnet/"
+MXNET_HOME="$HOME/github/mxnet/"
 echo "MXNet root folder: $MXNET_HOME"
 
 echo "Installing build-essential, libatlas-base-dev, libopencv-dev, pip, graphviz ..."
@@ -23,7 +23,7 @@ echo "Installing Python setuptools..."
 sudo apt-get install -y python-setuptools python-pip
 
 echo "Installing Python package for MXNet..."
-cd python; sudo python setup.py install
+# cd python; sudo python setup.py install
 
 echo "Adding MXNet path to your ~/.bashrc file"
 echo "export PYTHONPATH=$MXNET_HOME/python:$PYTHONPATH" >> ~/.bashrc
