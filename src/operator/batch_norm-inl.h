@@ -34,11 +34,11 @@ struct BatchNormParam : public dmlc::Parameter<BatchNormParam> {
   bool use_global_stats;
   bool output_mean_var;
   DMLC_DECLARE_PARAMETER(BatchNormParam) {
-    DMLC_DECLARE_FIELD(eps).set_default(1e-3f)
+    DMLC_DECLARE_FIELD(eps).set_default(1e-5f + 1e-10f)
     .describe("Epsilon to prevent div 0. "
               "Must be bigger than CUDNN_BN_MIN_EPSILON "
               "defined in cudnn.h when using cudnn (usually 1e-5)");
-    DMLC_DECLARE_FIELD(momentum).set_default(0.9f)
+    DMLC_DECLARE_FIELD(momentum).set_default(0.999f)
     .describe("Momentum for moving average");
     DMLC_DECLARE_FIELD(fix_gamma).set_default(true)
     .describe("Fix gamma while training");
