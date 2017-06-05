@@ -8,6 +8,7 @@
 #include <dmlc/io.h>
 #include <dmlc/memory_io.h>
 #include <dmlc/recordio.h>
+#include <dmlc/omp.h>
 #include <mxnet/base.h>
 #include <mxnet/ndarray.h>
 #include <mxnet/operator.h>
@@ -108,6 +109,12 @@ int MXSetProfilerState(int state) {
 #else
   LOG(FATAL) << "Need to compile with USE_PROFILER=1 for MXNet Profiler";
 #endif
+  API_END();
+}
+
+int MXSetNumOMPThreads(int thread_num) {
+  API_BEGIN();
+  omp_set_num_threads(thread_num);
   API_END();
 }
 
@@ -329,12 +336,16 @@ MXNET_DLL int MXNDArrayReshape(NDArrayHandle handle,
 int MXNDArrayGetShape(NDArrayHandle handle,
                       mx_uint *out_dim,
                       const mx_uint **out_pdata) {
+  MXAPIThreadLocalEntry *ret = MXAPIThreadLocalStore::Get();
   API_BEGIN();
   NDArray *arr = static_cast<NDArray*>(handle);
   if (!arr->is_none()) {
     const TShape &s = arr->shape();
     *out_dim = s.ndim();
-    *out_pdata = s.data();
+    std::vector<uint32_t>& buffer = ret->arg_shape_buffer;
+    buffer.resize(s.ndim());
+    nnvm::ShapeTypeCast(s.begin(), s.end(), buffer.data());
+    *out_pdata = buffer.data();
   } else {
     *out_dim = 0;
   }
@@ -384,6 +395,27 @@ int MXNDArrayGetContext(NDArrayHandle handle,
     *out_dev_type = 0;
     *out_dev_id = 0;
   }
+  API_END();
+}
+
+int MXNDArrayDetach(NDArrayHandle handle, NDArrayHandle *out) {
+  API_BEGIN();
+  NDArray *arr = static_cast<NDArray*>(handle);
+  *out = new NDArray(arr->Detach());
+  API_END();
+}
+
+int MXNDArraySetGradState(NDArrayHandle handle, int state) {
+  API_BEGIN();
+  NDArray *arr = static_cast<NDArray*>(handle);
+  arr->set_fresh_out_grad(static_cast<bool>(state));
+  API_END();
+}
+
+int MXNDArrayGetGradState(NDArrayHandle handle, int *out) {
+  API_BEGIN();
+  NDArray *arr = static_cast<NDArray*>(handle);
+  *out = arr->fresh_out_grad();
   API_END();
 }
 
