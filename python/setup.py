@@ -11,8 +11,9 @@ if "--inplace" in sys.argv:
 else:
     from setuptools import setup
     from setuptools.extension import Extension
-    kwargs = {'install_requires': ['numpy'], 'zip_safe': False}
+    kwargs = {'install_requires': ['numpy', 'requests', 'graphviz'], 'zip_safe': False}
 
+with_cython = False
 if '--with-cython' in sys.argv:
     with_cython = True
     sys.argv.remove('--with-cython')
