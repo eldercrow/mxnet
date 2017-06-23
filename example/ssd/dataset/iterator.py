@@ -1,7 +1,8 @@
 import mxnet as mx
 import numpy as np
 import cv2
-from tools.rand_sampler import RandSampler
+from tools.rand_sampler import RandScaler
+from tools.crop_roi_patch import crop_roi_patch
 
 class DetRecordIter(mx.io.DataIter):
     """
@@ -149,13 +150,7 @@ class DetIter(mx.io.DataIter):
             data_shape = (data_shape, data_shape)
         self._data_shape = data_shape
         self._mean_pixels = mx.nd.array(mean_pixels).reshape((3,1,1))
-        if not rand_samplers:
-            self._rand_samplers = []
-        else:
-            if not isinstance(rand_samplers, list):
-                rand_samplers = [rand_samplers]
-            assert isinstance(rand_samplers[0], RandSampler), "Invalid rand sampler"
-            self._rand_samplers = rand_samplers
+        self._rand_samplers = RandScaler(**rand_samplers)
         self.is_train = is_train
         self._rand_mirror = rand_mirror
         self._shuffle = shuffle
@@ -258,17 +253,18 @@ class DetIter(mx.io.DataIter):
                 ymin = int(crop[1] * height)
                 xmax = int(crop[2] * width)
                 ymax = int(crop[3] * height)
-                if xmin >= 0 and ymin >= 0 and xmax <= width and ymax <= height:
-                    data = mx.img.fixed_crop(data, xmin, ymin, xmax-xmin, ymax-ymin)
-                else:
-                    # padding mode
-                    new_width = xmax - xmin
-                    new_height = ymax - ymin
-                    offset_x = 0 - xmin
-                    offset_y = 0 - ymin
-                    data_bak = data
-                    data = mx.nd.full((new_height, new_width, 3), 128, dtype='uint8')
-                    data[offset_y:offset_y+height, offset_x:offset_x + width, :] = data_bak
+                data = crop_roi_patch(data.asnumpy(), (xmin, ymin, xmax, ymax))
+                # if xmin >= 0 and ymin >= 0 and xmax <= width and ymax <= height:
+                #     data = mx.img.fixed_crop(data, xmin, ymin, xmax-xmin, ymax-ymin)
+                # else:
+                #     # padding mode
+                #     new_width = xmax - xmin
+                #     new_height = ymax - ymin
+                #     offset_x = 0 - xmin
+                #     offset_y = 0 - ymin
+                #     data_bak = data
+                #     data = mx.nd.full((new_height, new_width, 3), 128, dtype='uint8')
+                #     data[offset_y:offset_y+height, offset_x:offset_x + width, :] = data_bak
                 label = rand_crops[index][1]
         if self.is_train:
             interp_methods = [cv2.INTER_LINEAR, cv2.INTER_CUBIC, cv2.INTER_AREA, \

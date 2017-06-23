@@ -5,6 +5,7 @@ from imdb import Imdb
 import xml.etree.ElementTree as ET
 from evaluate.eval_voc import voc_eval
 import cv2
+import cPickle
 
 
 class PascalVoc(Imdb):
@@ -24,6 +25,8 @@ class PascalVoc(Imdb):
     is_train : boolean
         if true, will load annotations
     """
+    IDX_VER = '170623_1'  # for caching
+
     def __init__(self, image_set, year, devkit_path, shuffle=False, is_train=False):
         super(PascalVoc, self).__init__('voc_' + year + '_' + image_set)
         self.image_set = image_set
@@ -43,10 +46,29 @@ class PascalVoc(Imdb):
                        'comp_id': 'comp4',}
 
         self.num_classes = len(self.classes)
-        self.image_set_index = self._load_image_set_index(shuffle)
-        self.num_images = len(self.image_set_index)
-        if self.is_train:
-            self.labels = self._load_image_labels()
+        # try to load cached data
+        cached = self._load_from_cache()
+        if cached is None:  # no cached data, load from DB (and save)
+            fn_cache = os.path.join(self.cache_path,
+                                    self.name + '_' + self.IDX_VER + '.pkl')
+            self.image_set_index = self._load_image_set_index(shuffle)
+            self.num_images = len(self.image_set_index)
+            if self.is_train:
+                self.labels = self._load_image_labels()
+            self._save_to_cache()
+        else:
+            self.image_set_index = cached['image_set_index']
+            self.num_images = len(self.image_set_index)
+            if self.is_train:
+                if 'labels' in cached:
+                    self.labels = cached['labels']
+                else:
+                    self.labels = self._load_image_labels()
+                    self._save_to_cache()
+        # self.image_set_index = self._load_image_set_index(shuffle)
+        # self.num_images = len(self.image_set_index)
+        # if self.is_train:
+        #     self.labels = self._load_image_labels()
 
     @property
     def cache_path(self):
@@ -61,6 +83,42 @@ class PascalVoc(Imdb):
         if not os.path.exists(cache_path):
             os.mkdir(cache_path)
         return cache_path
+
+    def _load_from_cache(self):
+        fn_cache = os.path.join(self.cache_path,
+                                self.name + '_' + self.IDX_VER + '.pkl')
+        cached = {}
+        if os.path.exists(fn_cache):
+            try:
+                with open(fn_cache, 'rb') as fh:
+                    header = cPickle.load(fh)
+                    assert header['ver'] == self.IDX_VER, "Version mismatch, re-index DB."
+                    self.max_objects = header['max_objects']
+                    iidx = cPickle.load(fh)
+                    cached['image_set_index'] = iidx['image_set_index']
+                    if self.is_train:
+                        labels = cPickle.load(fh)
+                        cached['labels'] = labels['labels']
+            except:
+                # print 'Exception in load_from_cache.'
+                return None
+        return None if not cached else cached
+
+    def _save_to_cache(self):
+        fn_cache = os.path.join(self.cache_path,
+                                self.name + '_' + self.IDX_VER + '.pkl')
+        with open(fn_cache, 'wb') as fh:
+            cPickle.dump({
+                'ver': self.IDX_VER,
+                'max_objects': self.max_objects
+            }, fh, cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump({
+                'image_set_index': self.image_set_index
+            }, fh, cPickle.HIGHEST_PROTOCOL)
+            if self.is_train:
+                cPickle.dump({
+                    'labels': self.labels
+                }, fh, cPickle.HIGHEST_PROTOCOL)
 
     def _load_image_set_index(self, shuffle):
         """
