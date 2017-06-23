@@ -61,7 +61,7 @@ Storage::Handle StorageImpl::Alloc(size_t size, Context ctx) {
   hd.ctx = ctx;
   hd.size = size;
   auto&& device = storage_managers_.at(ctx.dev_type);
-  storage::StorageManager *manager = device.Get(
+  std::shared_ptr<storage::StorageManager> manager = device.Get(
       ctx.dev_id, [ctx]() {
         storage::StorageManager *ptr = nullptr;
         switch (ctx.dev_type) {
@@ -105,7 +105,7 @@ Storage::Handle StorageImpl::Alloc(size_t size, Context ctx) {
 void StorageImpl::Free(Storage::Handle handle) {
   const Context &ctx = handle.ctx;
   auto&& device = storage_managers_.at(ctx.dev_type);
-  storage::StorageManager *manager = device.Get(
+  std::shared_ptr<storage::StorageManager> manager = device.Get(
       ctx.dev_id, []() {
         LOG(FATAL) <<  "Cannot Free space to a device you have not allocated";
         return nullptr;
@@ -117,7 +117,7 @@ void StorageImpl::Free(Storage::Handle handle) {
 void StorageImpl::DirectFree(Storage::Handle handle) {
   const Context &ctx = handle.ctx;
   auto&& device = storage_managers_.at(ctx.dev_type);
-  storage::StorageManager *manager = device.Get(
+  std::shared_ptr<storage::StorageManager> manager = device.Get(
       ctx.dev_id, []() {
         LOG(FATAL) <<  "Cannot Free space to a device you have not allocated";
         return nullptr;
