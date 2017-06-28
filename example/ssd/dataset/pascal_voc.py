@@ -25,9 +25,14 @@ class PascalVoc(Imdb):
     is_train : boolean
         if true, will load annotations
     """
+<<<<<<< HEAD
     IDX_VER = '170623_1'  # for caching
 
     def __init__(self, image_set, year, devkit_path, shuffle=False, is_train=False):
+=======
+    def __init__(self, image_set, year, devkit_path, shuffle=False, is_train=False,
+            names='pascal_voc.names'):
+>>>>>>> upstream/master
         super(PascalVoc, self).__init__('voc_' + year + '_' + image_set)
         self.image_set = image_set
         self.year = year
@@ -36,11 +41,8 @@ class PascalVoc(Imdb):
         self.extension = '.jpg'
         self.is_train = is_train
 
-        self.classes = ['aeroplane', 'bicycle', 'bird', 'boat',
-                        'bottle', 'bus', 'car', 'cat', 'chair',
-                        'cow', 'diningtable', 'dog', 'horse',
-                        'motorbike', 'person', 'pottedplant',
-                        'sheep', 'sofa', 'train', 'tvmonitor']
+        self.classes = self._load_class_names(names,
+            os.path.join(os.path.dirname(__file__), 'names'))
 
         self.config = {'use_difficult': True,
                        'comp_id': 'comp4',}

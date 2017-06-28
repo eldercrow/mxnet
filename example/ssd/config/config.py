@@ -59,12 +59,7 @@ cfg.train.inter_method = 10  # random interpolation
 cfg.train.rand_mirror_prob = 0.5
 cfg.train.shuffle = True
 cfg.train.seed = 233
-cfg.train.preprocess_threads = 6
-# for imdb based training
-cfg.train.rand_mirror = True
-cfg.train.init_shuffle = True
-cfg.train.epoch_shuffle = True
-cfg.train.resize_epoch = 1
+cfg.train.preprocess_threads = 48
 cfg.train = config_as_dict(cfg.train)  # convert to normal dict
 
 # validation
@@ -76,8 +71,5 @@ cfg.valid.color_jitter = ColorJitter()
 cfg.valid.rand_mirror_prob = 0
 cfg.valid.shuffle = False
 cfg.valid.seed = 0
-# for imdb based training
-cfg.valid.rand_mirror = True
-cfg.valid.init_shuffle = True
-cfg.valid.epoch_shuffle = True
+cfg.valid.preprocess_threads = 32
 cfg.valid = config_as_dict(cfg.valid)  # convert to normal dict
