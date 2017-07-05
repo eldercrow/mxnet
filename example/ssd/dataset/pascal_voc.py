@@ -25,19 +25,8 @@ class PascalVoc(Imdb):
     is_train : boolean
         if true, will load annotations
     """
-<<<<<<< HEAD
-<<<<<<< HEAD
-    IDX_VER = '170623_1'  # for caching
-
-    def __init__(self, image_set, year, devkit_path, shuffle=False, is_train=False):
-=======
     def __init__(self, image_set, year, devkit_path, shuffle=False, is_train=False,
             names='pascal_voc.names'):
->>>>>>> upstream/master
-=======
-    def __init__(self, image_set, year, devkit_path, shuffle=False, is_train=False,
-            names='pascal_voc.names'):
->>>>>>> 86abfca29f5f45a4dae7d055a68bc3aa8ccb70b0
         super(PascalVoc, self).__init__('voc_' + year + '_' + image_set)
         self.image_set = image_set
         self.year = year
